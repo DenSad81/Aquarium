@@ -9,7 +9,7 @@ class Program
     static void Main(string[] args)
     {
         Aquarium aquarium = new Aquarium();
-        GeneratorOfFish generatorOfFish = new GeneratorOfFish();
+        FishGenerator generatorOfFish = new FishGenerator();
         Game game = new Game();
 
         game.Live(aquarium, generatorOfFish);
@@ -18,13 +18,13 @@ class Program
 
 class Game
 {
-    private const string CommandAddFish = "1";
-    private const string CommandTakeFish = "2";
-    private const string CommandExit = "9";
-    private bool isRun = true;
-
-    public void Live(Aquarium aquarium, GeneratorOfFish generatorOfFish)
+    public void Live(Aquarium aquarium, FishGenerator generatorOfFish)
     {
+        const string CommandAddFish = "1";
+        const string CommandTakeFish = "2";
+        const string CommandExit = "9";
+        bool isRun = true;
+
         while (isRun)
         {
             aquarium.ShowFishs();
@@ -36,11 +36,11 @@ class Game
             switch (Utils.ReadString("Your shois: "))
             {
                 case CommandAddFish:
-                    aquarium.AddFish(generatorOfFish.CreeteFish());
+                    aquarium.AddFish(generatorOfFish.CreateFish());
                     break;
 
                 case CommandTakeFish:
-                    aquarium.DeleteFishNew(Utils.ReadInt("Input id of fish: "));
+                    aquarium.DeleteFish(Utils.ReadInt("Input id of fish: "));
                     break;
 
                 case CommandExit:
@@ -67,7 +67,7 @@ class Aquarium
             _fishs.Add(fish);
     }
 
-    private bool TryGetRefToFishFromId(int id, out Fish fish)
+    private bool TryGetFish(int id, out Fish fish)
     {
         for (int i = 0; i < _fishs.Count; i++)
         {
@@ -83,9 +83,9 @@ class Aquarium
         return false;
     }
 
-    public void DeleteFishNew(int id)
+    public void DeleteFish(int id)
     {
-        if (TryGetRefToFishFromId(id, out Fish fish) == false)
+        if (TryGetFish(id, out Fish fish) == false)
             return;
 
         _fishs.Remove(fish);
@@ -145,23 +145,16 @@ class Fish
         _actualAge++;
 }
 
-class GeneratorOfFish
+class FishGenerator
 {
-    private int _minLife;
-    private int _maxLife;
-    private string[] _names;
-
-    public GeneratorOfFish()
+    public Fish CreateFish()
     {
-        _minLife = 3;
-        _maxLife = 9;
-        _names = new string[] { "Airo", "Amad", "Fair", "Hayk", "Alf", "Argo", "Nemo", "Maxx" };
-    }
+        int minLife = 3;
+        int maxLife = 9;
+        string[] names = new string[] { "Airo", "Amad", "Fair", "Hayk", "Alf", "Argo", "Nemo", "Maxx" };
 
-    public Fish CreeteFish()
-    {
-        string name = _names[Utils.GenerateRandomNumber(0, _names.Length)];
-        int age = Utils.GenerateRandomNumber(_minLife, _maxLife);
+        string name = names[Utils.GenerateRandomNumber(0, names.Length)];
+        int age = Utils.GenerateRandomNumber(minLife, maxLife);
         return new Fish(name, age);
     }
 }
